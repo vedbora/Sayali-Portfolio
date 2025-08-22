@@ -50,24 +50,24 @@ app.post('/send', async (req, res) => {
 
     // Input validation
     if (!name || !email || !message) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'All fields are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required'
       });
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please provide a valid email address' 
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid email address'
       });
     }
 
     // Create transporter
     const transporter = createTransporter();
-    
+
     // Setup email data
     const mailOptions = {
       from: email,
@@ -79,18 +79,18 @@ app.post('/send', async (req, res) => {
 
     // Send email
     await transporter.sendMail(mailOptions);
-    
+
     // Send confirmation response
-    res.status(200).json({ 
-      success: true, 
-      message: 'Message sent successfully!' 
+    res.status(200).json({
+      success: true,
+      message: 'Message sent successfully!'
     });
-    
+
   } catch (error) {
     console.error('Error sending email:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to send message. Please try again later.' 
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send message. Please try again later.'
     });
   }
 });
@@ -103,8 +103,9 @@ app.get('/', (req, res) => {
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
-  
-  app.get('*', (req, res) => {
+
+  // ✅ Fix: use a regex instead of '*'
+  app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
 }
